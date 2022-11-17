@@ -9,9 +9,9 @@ public class AThread extends Thread {
     private boolean threadStarted = false;
     private boolean stopRequested = false;
 
-    private AJob job = null;
+    private Processing job = null;
 
-    AThread(AJob job) {
+    AThread(Processing job) {
         Log.i(TAG, "start AThread");
         this.job = job;
         Log.i(TAG, "end AThread");
@@ -26,22 +26,33 @@ public class AThread extends Thread {
     }
 
     private void runWorkingLoop() {
+        Log.i(TAG, "start runWorkingLoop");
         int iteration = 0;
         int maxIteration = 1000;
         int loopSleepTime = 10;
+        float endTime = System.currentTimeMillis() + 30000;
+        if (!stopRequested) {
+            job.setup();
+        }
         while (!stopRequested) {
             try {
                 Log.i(TAG, "Iteration: " + iteration);
-                job.task();
+                job.draw();
                 Thread.sleep(loopSleepTime);
                 iteration++;
                 if (iteration > maxIteration) {
+                    stopThread();
+                }
+                float now = System.currentTimeMillis();
+                Log.i(TAG, "now: " + now);
+                if (now > endTime) {
                     stopThread();
                 }
             } catch (final Exception e) {
                 break;
             }
         }
+        Log.i(TAG, "end runWorkingLoop");
     }
 
     public synchronized void stopThread() {

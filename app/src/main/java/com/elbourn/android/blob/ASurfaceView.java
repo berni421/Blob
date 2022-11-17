@@ -1,6 +1,8 @@
 package com.elbourn.android.blob;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -12,14 +14,13 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
 
    String TAG = getClass().getSimpleName();
    AThread thread;
-   SurfaceHolder holder = null;
    int width = 1024;
    int height = 2048;
 
    public ASurfaceView(Context context, AttributeSet attrs) {
       super(context, attrs);
       Log.i(TAG, "start ASurfaceView");
-      holder = getHolder();
+      SurfaceHolder holder = getHolder();
       holder.addCallback(this);
       Log.i(TAG, "start ASurfaceView");
    }
@@ -56,5 +57,19 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
    @Override
    public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
 
+   }
+
+   public Canvas getCanvas() {
+      Log.i(TAG, "start getCanvas");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+         return this.getHolder().lockHardwareCanvas();
+      } else {
+         return this.getHolder().lockCanvas(null);
+      }
+   }
+
+   public void putCanvas(Canvas canvas) {
+      Log.i(TAG, "start putCanvas");
+      this.getHolder().unlockCanvasAndPost(canvas);
    }
 }

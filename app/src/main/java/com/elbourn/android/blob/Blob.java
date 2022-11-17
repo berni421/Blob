@@ -5,18 +5,23 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
 import java.util.Random;
 
-public class Blob {
+import static java.lang.Math.abs;
+
+class Blob {
 
     String TAG = getClass().getSimpleName();
 
     int x, y, dx, dy, displayWidth, displayHeight;
-    int blobSize = 128;
+    int blobSize = 16;
     Paint paint = null;
-    RectF r = null;
+//    RectF r = null;
+    float lastTime;
 
     public Blob(int width, int height) {
         Log.i(TAG, "start Blob");
@@ -29,35 +34,43 @@ public class Blob {
         dx = new Random().nextInt(width / 100) - width / 100;
         dy = new Random().nextInt(height / 100) - height / 100;
         paint = new Paint();
-        paint.setColor(Color.RED);
-        r = new RectF(x, y, x + blobSize, y + blobSize);
+        paint.setColor(Color.GREEN);
+//        r = new RectF(x, y, x + blobSize, y + blobSize);
+        lastTime = System.currentTimeMillis();
         Log.i(TAG, "end Blob");
     }
 
     public void update() {
+        float now = System.currentTimeMillis();
+        float elapsed = (now - lastTime) / 1000.0f;
+        updateBlob(elapsed);
+        lastTime = now;
+    }
+
+    public void updateBlob(float elapsed) {
         Log.i(TAG, "start update");
-        if (x + dx < 0 || x + blobSize + dx > displayWidth) {
+        if (x + dx*elapsed < 0 || x + blobSize + dx*elapsed > displayWidth) {
             dx = -dx;
         }
-        if (y + dy < 0 || y + blobSize + dy > displayHeight) {
+        if (y + dy*elapsed < 0 || y + blobSize + dy*elapsed > displayHeight) {
             dy = -dy;
         }
         x = x + dx;
         y = y + dy;
-        r = new RectF(x, y, x + 128, y + 128);
+//        r = new RectF(x, y, x + blobSize, y + blobSize);
         Log.i(TAG, "x: " + x);
         Log.i(TAG, "y: " + y);
         Log.i(TAG, "dx: " + dx);
         Log.i(TAG, "dy: " + dy);
-        Log.i(TAG, "start update");
+        Log.i(TAG, "end update");
     }
 
-    public void display(SurfaceView surfaceView) {
-        Canvas canvas = surfaceView.getHolder().lockCanvas(null);
+    public void display(Canvas canvas) {
+        Log.i(TAG, "start display");
         displayWidth = canvas.getWidth();
         displayHeight = canvas.getHeight();
-        canvas.drawColor(Color.GRAY);
-        canvas.drawRoundRect(r, blobSize/4,blobSize/4, paint);
-        surfaceView.getHolder().unlockCanvasAndPost(canvas);
+//        canvas.drawRect(r, paint);
+        canvas.drawCircle(x, y, blobSize,paint);
+        Log.i(TAG, "start display");
     }
 }
