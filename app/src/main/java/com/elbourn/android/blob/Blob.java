@@ -17,60 +17,57 @@ class Blob {
 
     String TAG = getClass().getSimpleName();
 
-    int x, y, dx, dy, displayWidth, displayHeight;
-    int blobSize = 16;
+    PVector position, speed;
+    int displayWidth, displayHeight;
+    public static int blobSize = 256;
     Paint paint = null;
-//    RectF r = null;
-    float lastTime;
 
     public Blob(int width, int height) {
         Log.i(TAG, "start Blob");
         Log.i(TAG, "width: " + width);
         Log.i(TAG, "height: " + height);
-        this.displayWidth = width;
-        this.displayHeight = height;
-        x = new Random().nextInt(width-blobSize);
-        y = new Random().nextInt(height-blobSize);
-        dx = new Random().nextInt(width / 100) - width / 100;
-        dy = new Random().nextInt(height / 100) - height / 100;
+        displayWidth = width;
+        displayHeight = height;
+        int x = new Random().nextInt(width - 2 * blobSize) + blobSize;
+        int y = new Random().nextInt(height - 2 * blobSize) + blobSize;
+        position = new PVector(x, y);
+        int dmax = blobSize;
+        int dx = new Random().nextInt(dmax) + -dmax/2;
+        int dy = new Random().nextInt(dmax) + -dmax/2;
+        speed = new PVector(dx, dy);
         paint = new Paint();
         paint.setColor(Color.GREEN);
-//        r = new RectF(x, y, x + blobSize, y + blobSize);
-        lastTime = System.currentTimeMillis();
         Log.i(TAG, "end Blob");
     }
 
-    public void update() {
-        float now = System.currentTimeMillis();
-        float elapsed = (now - lastTime) / 1000.0f;
-        updateBlob(elapsed);
-        lastTime = now;
-    }
-
-    public void updateBlob(float elapsed) {
-        Log.i(TAG, "start update");
-        if (x + dx*elapsed < 0 || x + blobSize + dx*elapsed > displayWidth) {
-            dx = -dx;
+    public void update(float elapsed) {
+        Log.i(TAG, "start updateBlob");
+        speed.dump("speed");
+        PVector elapsedSpeed = speed.mult(elapsed);
+        elapsedSpeed.dump("elapsedSpeed");
+        PVector newSpeed = null;
+        PVector newPosition = PVector.add(position, elapsedSpeed);
+        if (newPosition.x < blobSize/2 || newPosition.x + blobSize/2 > displayWidth) {
+            newSpeed = new PVector(-speed.x, speed.y);
         }
-        if (y + dy*elapsed < 0 || y + blobSize + dy*elapsed > displayHeight) {
-            dy = -dy;
+        if (newPosition.y < blobSize/2 || newPosition.y + blobSize/2 > displayHeight) {
+            newSpeed = new PVector(speed.x, -speed.y);
         }
-        x = x + dx;
-        y = y + dy;
-//        r = new RectF(x, y, x + blobSize, y + blobSize);
-        Log.i(TAG, "x: " + x);
-        Log.i(TAG, "y: " + y);
-        Log.i(TAG, "dx: " + dx);
-        Log.i(TAG, "dy: " + dy);
-        Log.i(TAG, "end update");
+        if (newSpeed == null) {
+            position = newPosition;
+        } else {
+            speed = newSpeed;
+            elapsedSpeed = newSpeed.mult(elapsed);
+            position = PVector.add(position, elapsedSpeed);
+        }
+        Log.i(TAG, "end updateBlob");
     }
 
     public void display(Canvas canvas) {
         Log.i(TAG, "start display");
         displayWidth = canvas.getWidth();
         displayHeight = canvas.getHeight();
-//        canvas.drawRect(r, paint);
-        canvas.drawCircle(x, y, blobSize,paint);
-        Log.i(TAG, "start display");
+        canvas.drawCircle(position.x, position.y, blobSize/2, paint);
+        Log.i(TAG, "end display");
     }
 }

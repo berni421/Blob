@@ -29,7 +29,7 @@ public class AThread extends Thread {
         Log.i(TAG, "start runWorkingLoop");
         int iteration = 0;
         int maxIteration = 1000;
-        int loopSleepTime = 10;
+        int loopSleepTime = 100;
         float endTime = System.currentTimeMillis() + 30000;
         if (!stopRequested) {
             job.setup();

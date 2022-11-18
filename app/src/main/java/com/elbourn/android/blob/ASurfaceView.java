@@ -14,13 +14,14 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
 
    String TAG = getClass().getSimpleName();
    AThread thread;
-   int width = 1024;
+   SurfaceHolder holder = null;
+   int width = 1024; // interim values while surface is prepared. see SurfaceChanged() below
    int height = 2048;
 
    public ASurfaceView(Context context, AttributeSet attrs) {
       super(context, attrs);
       Log.i(TAG, "start ASurfaceView");
-      SurfaceHolder holder = getHolder();
+      holder = getHolder();
       holder.addCallback(this);
       Log.i(TAG, "start ASurfaceView");
    }
@@ -62,14 +63,14 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
    public Canvas getCanvas() {
       Log.i(TAG, "start getCanvas");
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-         return this.getHolder().lockHardwareCanvas();
+         return holder.lockHardwareCanvas();
       } else {
-         return this.getHolder().lockCanvas(null);
+         return holder.lockCanvas(null);
       }
    }
 
    public void putCanvas(Canvas canvas) {
       Log.i(TAG, "start putCanvas");
-      this.getHolder().unlockCanvasAndPost(canvas);
+      holder.unlockCanvasAndPost(canvas);
    }
 }
