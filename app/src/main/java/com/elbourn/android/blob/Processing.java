@@ -4,36 +4,35 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
 
-import java.util.ArrayList;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-class Processing extends AppCompatActivity {
+class Processing {
     String TAG = getClass().getSimpleName();
-    ASurfaceView surfaceview = null;
-    Blobs blobs = null;
+    ASurfaceView surfaceView = null;
+    ProcessingEvents processingEvents = null;
+    public static Blobs blobs = null;
 
-    Processing(ASurfaceView surfaceview) {
+    Processing(ASurfaceView surfaceView) {
         Log.i(TAG, "start Ajob");
-        this.surfaceview = surfaceview;
-        AThread thread = new AThread(this);
-        surfaceview.setThread(thread);
+        this.surfaceView = surfaceView;
+        AThread drawthread = new AThread(this);
+        surfaceView.setThread(drawthread);
+        processingEvents = new ProcessingEvents(surfaceView);
         Log.i(TAG, "end Ajob");
+    }
+
+    Processing() {
     }
 
     public void setup() {
         Log.i(TAG, "start setup");
-        blobs = new Blobs(surfaceview);
+        blobs = new Blobs(surfaceView);
         Log.i(TAG, "end setup");
     }
 
     public void draw() {
-        Canvas canvas = surfaceview.getCanvas();
+        Canvas canvas = surfaceView.getCanvas();
         canvas.drawColor(Color.GRAY);
         blobs.update();
         blobs.display(canvas);
-        surfaceview.putCanvas(canvas);
+        surfaceView.putCanvas(canvas);
     }
-
-
 }

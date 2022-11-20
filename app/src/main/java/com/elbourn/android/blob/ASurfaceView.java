@@ -1,12 +1,15 @@
 package com.elbourn.android.blob;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -57,7 +60,9 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
 
    @Override
    public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
-
+      if(thread!=null) {
+         thread.stopThread();
+      }
    }
 
    public Canvas getCanvas() {
@@ -73,4 +78,19 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
       Log.i(TAG, "start putCanvas");
       holder.unlockCanvasAndPost(canvas);
    }
+
+   @Override
+   public void onWindowFocusChanged(boolean hasWindowFocus) {
+      super.onWindowFocusChanged(hasWindowFocus);
+      if(thread!=null) {
+         if (!hasWindowFocus)
+            thread.stopThread();
+      }
+   }
+
+   @Override
+   public boolean performClick() {
+      return super.performClick();
+   }
+
 }

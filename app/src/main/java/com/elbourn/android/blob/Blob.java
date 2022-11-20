@@ -18,11 +18,11 @@ class Blob {
     String TAG = getClass().getSimpleName();
 
     PVector position, speed;
-    int displayWidth, displayHeight;
-    public static int blobSize = 256;
+    int displayWidth, displayHeight, attraction;
+    public static int blobSize = 128;
     Paint paint = null;
 
-    public Blob(int width, int height) {
+    public Blob(int width, int height, int colour) {
         Log.i(TAG, "start Blob");
         Log.i(TAG, "width: " + width);
         Log.i(TAG, "height: " + height);
@@ -31,19 +31,34 @@ class Blob {
         int x = new Random().nextInt(width - 2 * blobSize) + blobSize;
         int y = new Random().nextInt(height - 2 * blobSize) + blobSize;
         position = new PVector(x, y);
-        int dmax = blobSize;
+        int dmax = blobSize*4;
         int dx = new Random().nextInt(dmax) + -dmax/2;
         int dy = new Random().nextInt(dmax) + -dmax/2;
         speed = new PVector(dx, dy);
         paint = new Paint();
-        paint.setColor(Color.GREEN);
+        paint.setColor(colour);
+        attraction = 0;
         Log.i(TAG, "end Blob");
+    }
+
+    public void setPosition(int x, int y) {
+        position.set(x, y);
+    }
+
+    public void setSpeed(int x, int y) {
+        speed.set(x, y);
+    }
+
+    public void setAttraction(int attraction) {
+        this.attraction = attraction;
     }
 
     public void update(float elapsed) {
         Log.i(TAG, "start updateBlob");
+        if (paint.getColor() != Color.GREEN) return;
         speed.dump("speed");
-        PVector elapsedSpeed = speed.mult(elapsed);
+        PVector elapsedAttraction = Blobs.attraction(this);
+        PVector elapsedSpeed = PVector.add(speed.mult(elapsed), elapsedAttraction.mult(elapsed));
         elapsedSpeed.dump("elapsedSpeed");
         PVector newSpeed = null;
         PVector newPosition = PVector.add(position, elapsedSpeed);

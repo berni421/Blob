@@ -2,6 +2,8 @@ package com.elbourn.android.blob;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,7 +22,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "start onResume");
-        new Processing(findViewById(R.id.surfaceview01));
+        ASurfaceView surfaceView = findViewById(R.id.surfaceview01);
+        new Processing(surfaceView);
         Log.i(TAG, "end onResume");
     }
 }

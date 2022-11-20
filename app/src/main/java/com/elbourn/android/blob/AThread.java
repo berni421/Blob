@@ -1,6 +1,7 @@
 package com.elbourn.android.blob;
 
 import android.util.Log;
+import android.view.MotionEvent;
 
 public class AThread extends Thread {
 
@@ -29,10 +30,14 @@ public class AThread extends Thread {
         Log.i(TAG, "start runWorkingLoop");
         int iteration = 0;
         int maxIteration = 1000;
-        int loopSleepTime = 100;
+        int loopSleepTime = 10;
         float endTime = System.currentTimeMillis() + 30000;
         if (!stopRequested) {
-            job.setup();
+            try {
+                job.setup(); // needs a limit
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         while (!stopRequested) {
             try {

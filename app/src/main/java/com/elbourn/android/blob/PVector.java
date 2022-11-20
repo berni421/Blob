@@ -49,7 +49,7 @@ public class PVector {
         return new PVector(v1.x + v2.x, v1.y + v2.y);
     }
 
-    public PVector sub(PVector v1, PVector v2) {
+    static public PVector sub(PVector v1, PVector v2) {
         return new PVector(v1.x - v2.x, v1.y - v2.y);
     }
 
@@ -65,5 +65,19 @@ public class PVector {
 
     public void dump(String label) {
         Log.i(TAG, label + " x,y: " + x + "," + y);
+    }
+
+    public PVector normalize() {
+        float m = mag();
+        if (m != 0 && m != 1) {
+            div(m);
+        }
+        return this;
+    }
+
+    public PVector div(float n) {
+        x /= n;
+        y /= n;
+        return this;
     }
 }
