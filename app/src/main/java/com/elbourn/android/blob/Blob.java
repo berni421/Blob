@@ -18,27 +18,27 @@ class Blob {
     String TAG = getClass().getSimpleName();
 
     PVector position, speed;
-    int displayWidth, displayHeight, attraction;
+    int attraction;
     public static int blobSize = 128;
     Paint paint = null;
 
-    public Blob(int width, int height, int colour) {
+    public Blob() {
         Log.i(TAG, "start Blob");
-        Log.i(TAG, "width: " + width);
-        Log.i(TAG, "height: " + height);
-        displayWidth = width;
-        displayHeight = height;
-        int x = new Random().nextInt(width - 2 * blobSize) + blobSize;
-        int y = new Random().nextInt(height - 2 * blobSize) + blobSize;
+        int x = new Random().nextInt(ASurfaceView.getW() - 2 * blobSize) + blobSize;
+        int y = new Random().nextInt( ASurfaceView.getH() - 2 * blobSize) + blobSize;
         position = new PVector(x, y);
         int dmax = blobSize*4;
         int dx = new Random().nextInt(dmax) + -dmax/2;
         int dy = new Random().nextInt(dmax) + -dmax/2;
         speed = new PVector(dx, dy);
         paint = new Paint();
-        paint.setColor(colour);
+        paint.setColor(Color.GREEN);
         attraction = 0;
         Log.i(TAG, "end Blob");
+    }
+
+    public void setColor(int color) {
+        paint.setColor(color);
     }
 
     public void setPosition(int x, int y) {
@@ -62,10 +62,10 @@ class Blob {
         elapsedSpeed.dump("elapsedSpeed");
         PVector newSpeed = null;
         PVector newPosition = PVector.add(position, elapsedSpeed);
-        if (newPosition.x < blobSize/2 || newPosition.x + blobSize/2 > displayWidth) {
+        if (newPosition.x < blobSize/2 || newPosition.x + blobSize/2 > ASurfaceView.getW()) {
             newSpeed = new PVector(-speed.x, speed.y);
         }
-        if (newPosition.y < blobSize/2 || newPosition.y + blobSize/2 > displayHeight) {
+        if (newPosition.y < blobSize/2 || newPosition.y + blobSize/2 > ASurfaceView.getH()) {
             newSpeed = new PVector(speed.x, -speed.y);
         }
         if (newSpeed == null) {
@@ -80,8 +80,6 @@ class Blob {
 
     public void display(Canvas canvas) {
         Log.i(TAG, "start display");
-        displayWidth = canvas.getWidth();
-        displayHeight = canvas.getHeight();
         canvas.drawCircle(position.x, position.y, blobSize/2, paint);
         Log.i(TAG, "end display");
     }

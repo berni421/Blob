@@ -12,7 +12,6 @@ class Blobs {
     String TAG = getClass().getSimpleName();
     static ArrayList<Blob> blobs = null;
     int numberOfBlobs = 16;
-    static int attractionSize = 64;
     long lastUpdateTime;
     ASurfaceView surfaceView = null;
 
@@ -23,12 +22,8 @@ class Blobs {
         long now = System.currentTimeMillis();
         long stopTime = now + 2000;
         for (int i = 0; i < numberOfBlobs; i++) {
-            Blob blob = new Blob(surfaceView.getW(), surfaceView.getH(), Color.GREEN);
-            if (collides(blob)) {
-                i--;
-            } else {
-                blobs.add(blob);
-            }
+            Blob blob = new Blob();
+            addBlob(blob);
             now = System.currentTimeMillis();
             if (stopTime < now) {
                 Log.i(TAG, "Blobs: time limit reached");
@@ -40,6 +35,20 @@ class Blobs {
     }
 
     public void addBlob(Blob blob) {
+        long now = System.currentTimeMillis();
+        long stopTime = now + 2000;
+        while (collides(blob)) {
+            blob = new Blob();
+            now = System.currentTimeMillis();
+            if (stopTime < now) {
+                Log.i(TAG, "addBlob: time limit reached");
+                break;
+            }
+        }
+        blobs.add(blob);
+    }
+
+    public void addBlobRaw(Blob blob) {
         blobs.add(blob);
     }
 
@@ -49,7 +58,9 @@ class Blobs {
     }
 
     boolean collides(Blob blob) {
-        for (Blob blobi : blobs) {
+        int  blobCount = blobs.size();
+        for (int i=0; i<blobCount; i++) {
+            Blob blobi = blobs.get(i);
             if (collide(blob, blobi)) {
                 return true;
             }
@@ -68,8 +79,9 @@ class Blobs {
     }
 
     void avoidCollisions() {
-        for (int i=0; i<blobs.size(); i++) {
-            for (int j=0; j<blobs.size(); j++) {
+        int  blobCount = blobs.size();
+        for (int i=0; i<blobCount; i++) {
+            for (int j=0; j<blobCount; j++) {
                 if (i == j) break;
                 Blob blobi = blobs.get(i);
                 Blob blobj = blobs.get(j);
@@ -86,8 +98,9 @@ class Blobs {
         Log.i(TAG, "now: " + now);
         Log.i(TAG, "elapsed: " + elapsed);
         Log.i(TAG, "lastTime: " + lastUpdateTime);
-        for (Blob blob: blobs) {
-            blob.update(elapsed);
+        int  blobCount = blobs.size();
+        for (int i=0; i<blobCount; i++) {
+            blobs.get(i).update(elapsed);
         }
         avoidCollisions();
         lastUpdateTime = now;
@@ -95,20 +108,30 @@ class Blobs {
 
     static PVector attraction(Blob blob) {
         PVector a = new PVector(0,0);
-        for(Blob b: blobs) {
-            if (b.paint.getColor() == Color.RED) {
-                PVector direction = PVector.sub(b.position,blob.position);
+        int  blobCount = blobs.size();
+        for (int i=0; i<blobCount; i++) {
+            Blob blobi = blobs.get(i);
+            if (blobi.paint.getColor() == Color.RED) {
+                PVector direction = PVector.sub(blobi.position, blob.position);
                 a = PVector.add(a, direction);
             }
         }
-        a = a.normalize().mult(attractionSize);
+        float dSize = a.mag();
+        float aSize = 0;
+        float fixup = 4*ASurfaceView.getH()*ASurfaceView.getW();
+        if (dSize != 0) {
+            aSize = (fixup) / (dSize * dSize);
+            a = a.normalize().mult(aSize);
+        }
+        Log.i("Blobs", "aSize: " + aSize);
         a.dump("attraction");
         return a;
     }
 
     void display(Canvas canvas) {
-        for (Blob blob: blobs) {
-            blob.display(canvas);
+        int  blobCount = blobs.size();
+        for (int i=0; i<blobCount; i++) {
+            blobs.get(i).display(canvas);
         }
     }
 }

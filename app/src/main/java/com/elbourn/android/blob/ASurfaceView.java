@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
 
@@ -18,8 +19,8 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
    String TAG = getClass().getSimpleName();
    AThread thread;
    SurfaceHolder holder = null;
-   int width = 1024; // interim values while surface is prepared. see SurfaceChanged() below
-   int height = 2048;
+   static int[] width = {1024}; // interim values while surface is prepared. see SurfaceChanged() below
+   static int[] height = {2048};
 
    public ASurfaceView(Context context, AttributeSet attrs) {
       super(context, attrs);
@@ -45,22 +46,22 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
    @Override
    public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int format, int width, int height) {
       Log.i(TAG, "start surfaceChanged");
-      this.width = width;
-      this.height = height;
+      this.width[0] = width;
+      this.height[0] = height;
       Log.i(TAG, "end surfaceChanged");
    }
 
-   public int getW() {
-      return width;
+   public static int getW() {
+      return width[0];
    }
 
-   public int getH() {
-      return height;
+   public static int getH() {
+      return height[0];
    }
 
    @Override
    public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
-      if(thread!=null) {
+      if (thread != null) {
          thread.stopThread();
       }
    }
@@ -82,7 +83,7 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
    @Override
    public void onWindowFocusChanged(boolean hasWindowFocus) {
       super.onWindowFocusChanged(hasWindowFocus);
-      if(thread!=null) {
+      if (thread != null) {
          if (!hasWindowFocus)
             thread.stopThread();
       }
@@ -90,7 +91,12 @@ public class ASurfaceView extends SurfaceView implements SurfaceHolder.Callback 
 
    @Override
    public boolean performClick() {
+      Log.i(TAG, "start performClick");
       return super.performClick();
    }
 
+   public static int statusBarHeight(android.content.res.Resources res) {
+      return (int) (24 * res.getDisplayMetrics().density);
+   }
 }
+

@@ -3,10 +3,12 @@ package com.elbourn.android.blob;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 
 class ProcessingEvents {
     String TAG = getClass().getSimpleName();
@@ -15,33 +17,32 @@ class ProcessingEvents {
     ProcessingEvents(ASurfaceView surfaceView) {
         surfaceView.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                int yFix = getStatusBarHeight(surfaceView.getContext());
-                actionOnTouch(surfaceView, event.getRawX(), event.getRawY()-yFix);
-                surfaceView.performClick();
-                return false;
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    int yFix = getStatusBarHeight(Resources.getSystem().newTheme().getResources());
+                    actionOnTouch(event.getRawX(), event.getRawY() - yFix);
+                    return true;
+                }
+                return surfaceView.performClick();
             }
         });
     }
 
-    void actionOnTouch(ASurfaceView surfaceView, float x, float y) {
-        Log.i(TAG, "x: " + x);
+    void actionOnTouch(float x, float y) {
+        Log.i(TAG, "start actionOntouch");
+        Log.i(TAG, "Touch x,y: " + x + "," + y);
         if (redBlobsRemaining > 0) {
             // add red blob to Blobs
-            Blob blob = new Blob(surfaceView.getW(), surfaceView.getH(), Color.RED);
+            Blob blob = new Blob();
             blob.setPosition((int) x, (int) y - Blob.blobSize);
             blob.setSpeed(0, 0);
-            Processing.blobs.addBlob(blob);
+            blob.setColor(Color.RED);
+            Processing.blobs.addBlobRaw(blob);
             redBlobsRemaining--;
         }
-        Log.i(TAG, "y: " + y);
+        Log.i(TAG, "end actionOnTouch");
     }
 
-    public static int getStatusBarHeight(final Context context) {
-        final Resources resources = context.getResources();
-        final int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0)
-            return resources.getDimensionPixelSize(resourceId);
-        else
-            return (int) Math.ceil((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? 24 : 25) * resources.getDisplayMetrics().density);
+    int getStatusBarHeight(android.content.res.Resources res) {
+        return (int) (24 * res.getDisplayMetrics().density);
     }
 }

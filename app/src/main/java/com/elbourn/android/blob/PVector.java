@@ -7,9 +7,6 @@ public class PVector {
     float x;
     float y;
 
-    PVector() {
-    }
-
     PVector(float x, float y) {
         this.x = x;
         this.y = y;

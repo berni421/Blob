@@ -19,9 +19,6 @@ class Processing {
         Log.i(TAG, "end Ajob");
     }
 
-    Processing() {
-    }
-
     public void setup() {
         Log.i(TAG, "start setup");
         blobs = new Blobs(surfaceView);
