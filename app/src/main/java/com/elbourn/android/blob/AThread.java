@@ -10,6 +10,9 @@ public class AThread extends Thread {
     private boolean threadStarted = false;
     private boolean stopRequested = false;
     private Processing job = null;
+    int maxLoop = 1000;
+    long loopSleepTime = 100;
+    long runTime = 60000;
 
     AThread(Processing job) {
         Log.i(TAG, "start AThread");
@@ -28,9 +31,7 @@ public class AThread extends Thread {
     private void runWorkingLoop() {
         Log.i(TAG, "start runWorkingLoop");
         int loop = 0;
-        int maxLoop = 1000;
-        int loopSleepTime = 10;
-        float endTime = System.currentTimeMillis() + 30000;
+        long endTime = System.currentTimeMillis() + runTime;
         if (!stopRequested) {
             try {
                 job.setup(); // needs a limit
@@ -47,13 +48,13 @@ public class AThread extends Thread {
                 if (loop > maxLoop) {
                     stopThread();
                 }
-                float now = System.currentTimeMillis();
-                Log.i(TAG, "now: " + now);
+                long now = System.currentTimeMillis();
+//                Log.i(TAG, "now: " + now);
                 if (now > endTime) {
                     stopThread();
                 }
             } catch (final Exception e) {
-                Log.e(TAG, e.toString());
+                e.printStackTrace();
                 break;
             }
         }

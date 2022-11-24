@@ -8,21 +8,27 @@ import java.util.ArrayList;
 
 import static java.lang.Math.abs;
 
-class Blobs {
+public class Blobs {
     String TAG = getClass().getSimpleName();
     static ArrayList<Blob> blobs = null;
-    int numberOfBlobs = 16;
+    int numberOfBlobs = 32;
     long lastUpdateTime;
     ASurfaceView surfaceView = null;
+    static float universalGravitationalConstant = (float) 6.67428e-11;
+    static float smallMass = 4;
+    static int smallSize = 128;
+    static float largeMass = (float)1.0e6 * smallMass;
+    static int largeSize = 2 * smallSize;
+    static float collisionLoss = 1f;
 
-    Blobs (ASurfaceView surfaceView) {
+    Blobs(ASurfaceView surfaceView) {
         Log.i(TAG, "start Blobs");
         this.surfaceView = surfaceView;
         blobs = new ArrayList<Blob>();
         long now = System.currentTimeMillis();
         long stopTime = now + 2000;
         for (int i = 0; i < numberOfBlobs; i++) {
-            Blob blob = new Blob();
+            Blob blob = new Blob(smallSize);
             addBlob(blob);
             now = System.currentTimeMillis();
             if (stopTime < now) {
@@ -38,29 +44,35 @@ class Blobs {
         long now = System.currentTimeMillis();
         long stopTime = now + 2000;
         while (collides(blob)) {
-            blob = new Blob();
+            blob = new Blob(smallSize);
             now = System.currentTimeMillis();
             if (stopTime < now) {
                 Log.i(TAG, "addBlob: time limit reached");
                 break;
             }
         }
+        blob.setColor(Color.BLUE);
+        blob.setMass(smallMass);
+        blob.setSize(smallSize);
         blobs.add(blob);
     }
 
-    public void addBlobRaw(Blob blob) {
+    public static void addBlobRaw(Blob blob) {
         blobs.add(blob);
     }
 
     boolean collide(Blob blobi, Blob blobj) {
-        float distance = PVector.dist(blobi.position, blobj.position);
-        return abs(distance) < Blob.blobSize;
+        float distance = abs(PVector.dist(blobi.position, blobj.position)) - (blobi.size + blobj.size)/2f;
+        boolean collide = (distance <= 0);
+//        if (collide) blobi.setColor(Color.WHITE);
+        return collide;
     }
 
     boolean collides(Blob blob) {
-        int  blobCount = blobs.size();
-        for (int i=0; i<blobCount; i++) {
+        int blobCount = blobs.size();
+        for (int i = 0; i < blobCount; i++) {
             Blob blobi = blobs.get(i);
+            if (blob.equals(blobi)) continue;
             if (collide(blob, blobi)) {
                 return true;
             }
@@ -69,20 +81,17 @@ class Blobs {
     }
 
     void avoid(Blob blobi, Blob blobj) {
-        float velocityi = blobi.speed.mag();
-        PVector newDirectioni = PVector.sub(blobi.position, blobj.position).normalize();
-        blobi.speed = newDirectioni.mult(velocityi);
-
-        float velocityj = blobj.speed.mag();
-        PVector newDirectionj = PVector.sub(blobj.position, blobi.position).normalize();
-        blobj.speed = newDirectionj.mult(velocityj);
+        Log.i(TAG,"start avoid");
+        blobi.speed = blobi.speed.negate();
+//        blobj.speed = blobj.speed.negate();
+        Log.i(TAG,"end avoid");
     }
 
     void avoidCollisions() {
-        int  blobCount = blobs.size();
-        for (int i=0; i<blobCount; i++) {
-            for (int j=0; j<blobCount; j++) {
-                if (i == j) break;
+        int blobCount = blobs.size();
+        for (int i = 0; i < blobCount; i++) {
+            for (int j = 0; j < blobCount; j++) {
+                if (i == j) continue;
                 Blob blobi = blobs.get(i);
                 Blob blobj = blobs.get(j);
                 if (collide(blobi, blobj)) {
@@ -94,43 +103,41 @@ class Blobs {
 
     public void update() {
         long now = System.currentTimeMillis();
-        float elapsed = (now - lastUpdateTime) / 1000f;
-        Log.i(TAG, "now: " + now);
-        Log.i(TAG, "elapsed: " + elapsed);
-        Log.i(TAG, "lastTime: " + lastUpdateTime);
-        int  blobCount = blobs.size();
-        for (int i=0; i<blobCount; i++) {
-            blobs.get(i).update(elapsed);
+        float elapsed = (float) (now - lastUpdateTime) / 1000;
+        int blobCount = blobs.size();
+        for (int i = 0; i < blobCount; i++) {
+            Blob blob = blobs.get(i);
+            if (blob.mass > smallMass) continue;
+            PVector attraction = attraction(blob);
+            blob.update(elapsed, attraction);
         }
         avoidCollisions();
         lastUpdateTime = now;
     }
 
     static PVector attraction(Blob blob) {
-        PVector a = new PVector(0,0);
-        int  blobCount = blobs.size();
-        for (int i=0; i<blobCount; i++) {
+        PVector a = new PVector(0, 0);
+        if (blob.mass > smallMass) {
+            return a;
+        }
+        int blobCount = blobs.size();
+        for (int i = 0; i < blobCount; i++) {
             Blob blobi = blobs.get(i);
-            if (blobi.paint.getColor() == Color.RED) {
-                PVector direction = PVector.sub(blobi.position, blob.position);
-                a = PVector.add(a, direction);
-            }
+            if (blobi.equals(blob)) continue;
+            PVector direction = PVector.sub(blobi.position, blob.position);
+            float distance = direction.mag();
+            float fix = (float) 1.0e8;
+            float force = fix * universalGravitationalConstant * (blobi.mass * blob.mass) / (distance * distance);
+            a = PVector.add(a, direction.normalize().mult(force));
+            a.dump("force");
         }
-        float dSize = a.mag();
-        float aSize = 0;
-        float fixup = 4*ASurfaceView.getH()*ASurfaceView.getW();
-        if (dSize != 0) {
-            aSize = (fixup) / (dSize * dSize);
-            a = a.normalize().mult(aSize);
-        }
-        Log.i("Blobs", "aSize: " + aSize);
         a.dump("attraction");
         return a;
     }
 
     void display(Canvas canvas) {
-        int  blobCount = blobs.size();
-        for (int i=0; i<blobCount; i++) {
+        int blobCount = blobs.size();
+        for (int i = 0; i < blobCount; i++) {
             blobs.get(i).display(canvas);
         }
     }

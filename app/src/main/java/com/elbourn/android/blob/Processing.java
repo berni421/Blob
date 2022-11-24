@@ -8,7 +8,7 @@ class Processing {
     String TAG = getClass().getSimpleName();
     ASurfaceView surfaceView = null;
     ProcessingEvents processingEvents = null;
-    public static Blobs blobs = null;
+    Blobs blobs = null;
 
     Processing(ASurfaceView surfaceView) {
         Log.i(TAG, "start Ajob");
