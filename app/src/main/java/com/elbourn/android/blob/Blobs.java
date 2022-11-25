@@ -3,6 +3,8 @@ package com.elbourn.android.blob;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -11,15 +13,16 @@ import static java.lang.Math.abs;
 public class Blobs {
     String TAG = getClass().getSimpleName();
     static ArrayList<Blob> blobs = null;
-    int numberOfBlobs = 32;
+    int numberOfBlobs = 16;
     long lastUpdateTime;
     ASurfaceView surfaceView = null;
     static float universalGravitationalConstant = (float) 6.67428e-11;
-    static float smallMass = 4;
+    static float smallMass = 1;
     static int smallSize = 128;
-    static float largeMass = (float)1.0e6 * smallMass;
-    static int largeSize = 2 * smallSize;
-    static float collisionLoss = 1f;
+    static float largeMass = (float) (333000 * smallMass);
+    static int largeSize = (int) (1.5 * smallSize);
+    static float collisionLoss = 0.75f;
+
 
     Blobs(ASurfaceView surfaceView) {
         Log.i(TAG, "start Blobs");
@@ -62,9 +65,8 @@ public class Blobs {
     }
 
     boolean collide(Blob blobi, Blob blobj) {
-        float distance = abs(PVector.dist(blobi.position, blobj.position)) - (blobi.size + blobj.size)/2f;
+        float distance = abs(PVector.dist(blobi.position, blobj.position)) - (blobi.size + blobj.size) / 2f;
         boolean collide = (distance <= 0);
-//        if (collide) blobi.setColor(Color.WHITE);
         return collide;
     }
 
@@ -80,13 +82,6 @@ public class Blobs {
         return false;
     }
 
-    void avoid(Blob blobi, Blob blobj) {
-        Log.i(TAG,"start avoid");
-        blobi.speed = blobi.speed.negate();
-//        blobj.speed = blobj.speed.negate();
-        Log.i(TAG,"end avoid");
-    }
-
     void avoidCollisions() {
         int blobCount = blobs.size();
         for (int i = 0; i < blobCount; i++) {
@@ -95,7 +90,8 @@ public class Blobs {
                 Blob blobi = blobs.get(i);
                 Blob blobj = blobs.get(j);
                 if (collide(blobi, blobj)) {
-                    avoid(blobi, blobj);
+//                    blobi.speed = blobi.speed.negate();
+                    blobj.speed = blobj.speed.negate();
                 }
             }
         }
@@ -117,19 +113,16 @@ public class Blobs {
 
     static PVector attraction(Blob blob) {
         PVector a = new PVector(0, 0);
-        if (blob.mass > smallMass) {
-            return a;
-        }
         int blobCount = blobs.size();
         for (int i = 0; i < blobCount; i++) {
             Blob blobi = blobs.get(i);
             if (blobi.equals(blob)) continue;
             PVector direction = PVector.sub(blobi.position, blob.position);
             float distance = direction.mag();
-            float fix = (float) 1.0e8;
+            float fix = (float) 1.e5 * Bar.getValue();
+            Log.i("Blobs", "fix: " + fix);
             float force = fix * universalGravitationalConstant * (blobi.mass * blob.mass) / (distance * distance);
             a = PVector.add(a, direction.normalize().mult(force));
-            a.dump("force");
         }
         a.dump("attraction");
         return a;
@@ -141,4 +134,5 @@ public class Blobs {
             blobs.get(i).display(canvas);
         }
     }
+
 }

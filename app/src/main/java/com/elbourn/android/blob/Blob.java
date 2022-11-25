@@ -57,23 +57,20 @@ public class Blob {
 
     public void update(float elapsed, PVector attraction) {
         Log.i(TAG, "start updateBlob");
-        if (speed == null) return;
-        PVector elapsedSpeed = PVector.add(speed.mult(elapsed), attraction);
-        if (elapsedSpeed.mag() > size) {
-            elapsedSpeed.normalize().mult(size);
+        PVector elapsedSpeed = PVector.add(speed, attraction).mult(elapsed);
+        PVector proposedPosition = PVector.add(position, elapsedSpeed);
+        if (proposedPosition.x < size/2 || proposedPosition.x + size/2 > ASurfaceView.getW()) {
+            speed = new PVector(-(speed.x+attraction.x), speed.y+attraction.y)
+                    .mult(Blobs.collisionLoss);
+            elapsedSpeed = speed.mult(elapsed);
         }
-        PVector newPosition = PVector.add(position, elapsedSpeed);
-        if (newPosition.x < size/2 || newPosition.x + size/2 > ASurfaceView.getW()) {
-            speed = new PVector(-speed.x - attraction.x, speed.y + attraction.y);
-            position = PVector.add(position, speed.mult(elapsed));
-            return;
+        if (proposedPosition.y < size/2 || proposedPosition.y + size/2 > ASurfaceView.getH()) {
+            speed = new PVector(speed.x+attraction.x, -(speed.y+attraction.y))
+                    .mult(Blobs.collisionLoss);
+            elapsedSpeed = speed.mult(elapsed);
         }
-        if (newPosition.y < size/2 || newPosition.y + size/2 > ASurfaceView.getH()) {
-            speed = new PVector(speed.x + attraction.x, -speed.y - attraction.y);
-            position = PVector.add(position, speed.mult(elapsed));
-            return;
-        }
-        position = newPosition;
+        position = PVector.add(position, elapsedSpeed);
+        speed.dump("speed");
         Log.i(TAG, "end updateBlob");
     }
 

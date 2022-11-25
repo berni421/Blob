@@ -2,8 +2,8 @@ package com.elbourn.android.blob;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,8 +22,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "start onResume");
-        ASurfaceView surfaceView = findViewById(R.id.surfaceview01);
+        SeekBar seekBar = findViewById(R.id.seekBar01);
+        TextView textView = findViewById(R.id.textView01);
+        new Bar(seekBar, textView);
+        ASurfaceView surfaceView = findViewById(R.id.surfaceView01);
         new Processing(surfaceView);
         Log.i(TAG, "end onResume");
     }
+    
+
 }
