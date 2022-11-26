@@ -13,15 +13,15 @@ import static java.lang.Math.abs;
 public class Blobs {
     String TAG = getClass().getSimpleName();
     static ArrayList<Blob> blobs = null;
-    int numberOfBlobs = 16;
+    int numberOfBlobs = 64;
     long lastUpdateTime;
     ASurfaceView surfaceView = null;
     static float universalGravitationalConstant = (float) 6.67428e-11;
-    static float smallMass = 1;
-    static int smallSize = 128;
-    static float largeMass = (float) (333000 * smallMass);
-    static int largeSize = (int) (1.5 * smallSize);
-    static float collisionLoss = 0.75f;
+    static float smallMass = 1;                // planet
+    static int smallSize = 64;                 // planet
+    static float largeMass = 333000*smallMass; // sun
+    static int largeSize = 2*smallSize;        // sun
+    static float collisionLoss = 0.9f;
 
 
     Blobs(ASurfaceView surfaceView) {
@@ -91,7 +91,9 @@ public class Blobs {
                 Blob blobj = blobs.get(j);
                 if (collide(blobi, blobj)) {
 //                    blobi.speed = blobi.speed.negate();
-                    blobj.speed = blobj.speed.negate();
+//                    blobj.speed = blobj.speed.negate();
+                    float velocity = blobi.speed.mult(collisionLoss).mag();
+                    blobi.speed = PVector.sub(blobi.position, blobj.position).normalize().mult(velocity);
                 }
             }
         }
@@ -119,7 +121,7 @@ public class Blobs {
             if (blobi.equals(blob)) continue;
             PVector direction = PVector.sub(blobi.position, blob.position);
             float distance = direction.mag();
-            float fix = (float) 1.e5 * Bar.getValue();
+            float fix = (float) Math.pow(10,Bar.getValue());
             Log.i("Blobs", "fix: " + fix);
             float force = fix * universalGravitationalConstant * (blobi.mass * blob.mass) / (distance * distance);
             a = PVector.add(a, direction.normalize().mult(force));

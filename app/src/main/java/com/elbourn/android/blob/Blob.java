@@ -24,11 +24,17 @@ public class Blob {
 
     Blob(int size) {
         Log.i(TAG, "start Blob");
-        int x = new Random().nextInt(ASurfaceView.getW() - 2 * size) + size;
-        int y = new Random().nextInt( ASurfaceView.getH() - 2 * size) + size;
-        position = new PVector(x, y);
-        paint = new Paint();
+        int minWidth = 2*size;
+        int maxWidth = ASurfaceView.getW() - 2 * size;
+        if (maxWidth < 1) maxWidth = ASurfaceView.getW();
+        int x = minWidth + new Random().nextInt(maxWidth);
+        int minHeight = 2*size;
+        int maxHeight = ASurfaceView.getH() - 2 * size;
+        if (maxHeight < 1) maxHeight = ASurfaceView.getH();
+        int y = minHeight + new Random().nextInt(maxHeight);
+        setPosition(x, y);
         setSize(size);
+        paint = new Paint();
         Log.i(TAG, "end Blob");
     }
 
@@ -48,7 +54,7 @@ public class Blob {
     }
 
     public void setPosition(int x, int y) {
-        position.set(x, y);
+        position = new PVector(x, y);
     }
 
     public void setSpeed(int x, int y) {
@@ -58,15 +64,18 @@ public class Blob {
     public void update(float elapsed, PVector attraction) {
         Log.i(TAG, "start updateBlob");
         PVector elapsedSpeed = PVector.add(speed, attraction).mult(elapsed);
+        if (elapsedSpeed.mag() > size) elapsedSpeed.normalize().mult(size);
         PVector proposedPosition = PVector.add(position, elapsedSpeed);
         if (proposedPosition.x < size/2 || proposedPosition.x + size/2 > ASurfaceView.getW()) {
             speed = new PVector(-(speed.x+attraction.x), speed.y+attraction.y)
                     .mult(Blobs.collisionLoss);
+            if (speed.mag() > size) speed.normalize().mult(size);
             elapsedSpeed = speed.mult(elapsed);
         }
         if (proposedPosition.y < size/2 || proposedPosition.y + size/2 > ASurfaceView.getH()) {
             speed = new PVector(speed.x+attraction.x, -(speed.y+attraction.y))
                     .mult(Blobs.collisionLoss);
+            if (speed.mag() > size) speed.normalize().mult(size);
             elapsedSpeed = speed.mult(elapsed);
         }
         position = PVector.add(position, elapsedSpeed);

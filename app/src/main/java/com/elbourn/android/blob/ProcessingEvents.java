@@ -9,7 +9,7 @@ import android.view.View;
 class ProcessingEvents {
     String TAG = getClass().getSimpleName();
     int blobsRemaining = 3;
-    long lastTime = System.currentTimeMillis();
+    long lastTime = System.currentTimeMillis()-10000;
     Blobs blobs = null;
 
     ProcessingEvents(ASurfaceView surfaceView) {
