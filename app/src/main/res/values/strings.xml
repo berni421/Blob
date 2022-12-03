@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Blob</string>
+    <string name="title_activity_disclaimer">DisclaimerActivity</string>
+    <string name="disclaimer_text"><center>Terms of Use</center>\n\n
+        Please ensure that before using this application that you expressly understand and agree that your use of this application is at your sole risk and that the application is provided “as is” and “as available” without warranty of any kind, to the maximum extent permitted by applicable law.\n\n
+        Once the application is available to you through your google account, you should check the application as soon as reasonably possible to ensure that it functions and performs as stated, and notify us or Provider as soon as reasonably possible if you find any errors or defect.\n\n
+    </string>
+    <string name="disclaimer_accept">I accept these terms.</string>
+    <string name="dont_show_next_time">Do not show next time?</string>
+    <string name="intro_welcome">Welcome\n\nA demonstration of object motion, collision and accretion.</string>
+    <string name="intro_welcome2">The application starts with a set of small mass objects moving in random directions. These tend to collide and bounce away from each other. Clicking on the screen places some heavy objects. These heavy objects can have so much gravitational force that other objects stick when they collide. A slider is provided to vary the gravitational forces.</string>
+    <string name="into_donate_text">Please make a financial gift of your choice to support my software projects. See menu options top right - help feed the cat.</string>
+    <string name="howto">Use the slider to adjust gravity for all objects.\n\nClick to place some massive objects on screen.</string>
 </resources>

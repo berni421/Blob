@@ -21,7 +21,7 @@ public class Blobs {
     static int smallSize = 64;                 // planet
     static float largeMass = 333000*smallMass; // sun
     static int largeSize = 2*smallSize;        // sun
-    static float collisionLoss = 0.9f;
+    static float collisionLoss = 0.75f;
 
 
     Blobs(ASurfaceView surfaceView) {
@@ -90,8 +90,6 @@ public class Blobs {
                 Blob blobi = blobs.get(i);
                 Blob blobj = blobs.get(j);
                 if (collide(blobi, blobj)) {
-//                    blobi.speed = blobi.speed.negate();
-//                    blobj.speed = blobj.speed.negate();
                     float velocity = blobi.speed.mult(collisionLoss).mag();
                     blobi.speed = PVector.sub(blobi.position, blobj.position).normalize().mult(velocity);
                 }

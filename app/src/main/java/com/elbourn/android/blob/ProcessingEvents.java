@@ -1,24 +1,32 @@
 package com.elbourn.android.blob;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 class ProcessingEvents {
     String TAG = getClass().getSimpleName();
-    int blobsRemaining = 3;
-    long lastTime = System.currentTimeMillis()-10000;
+    int blobsRemaining = 6;
+    long lastTime = 0;
     Blobs blobs = null;
 
-    ProcessingEvents(ASurfaceView surfaceView) {
+    ProcessingEvents(Context context, ASurfaceView surfaceView) {
         this.blobs = blobs;
         surfaceView.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     int yFix = getStatusBarHeight(Resources.getSystem().newTheme().getResources());
                     actionOnTouch(event.getRawX(), event.getRawY() - yFix);
+                    TextView textView02 = (TextView) ((Activity) context).findViewById(R.id.textView02);
+                    if (textView02 != null) textView02.setVisibility(View.GONE);
                     return true;
                 }
                 return surfaceView.performClick();
@@ -35,7 +43,7 @@ class ProcessingEvents {
         Log.i(TAG, "start actionOntouch");
         Log.i(TAG, "Touch x,y: " + x + "," + y);
         long now = System.currentTimeMillis();
-        long readyTime = lastTime + 1000;
+        long readyTime = lastTime + 200;
         long diff = now - readyTime;
         Log.i(TAG, "diff: " + diff);
         if (now < readyTime) {
@@ -55,6 +63,8 @@ class ProcessingEvents {
         Blobs.addBlobRaw(blob);
         blobsRemaining--;
         lastTime = System.currentTimeMillis();
+
+
         Log.i(TAG, "end actionOnTouch");
     }
 
