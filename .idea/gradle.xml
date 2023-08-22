@@ -9,8 +9,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$USER_HOME$/Dropbox/Documents/AndroidStudioProjects/Blob" />
-            <option value="$USER_HOME$/Dropbox/Documents/AndroidStudioProjects/Blob/app" />
+            <option value="$USER_HOME$/Documents/AndroidStudioProjects/Blob" />
+            <option value="$USER_HOME$/Documents/AndroidStudioProjects/Blob/app" />
           </set>
         </option>
       </GradleProjectSettings>
