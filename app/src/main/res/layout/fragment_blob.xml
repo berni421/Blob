@@ -15,7 +15,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="60dp">
+        android:paddingBottom="80dp">
 
         <SeekBar
             android:id="@+id/seekBar01"
@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:max="8"
             android:progress="1"
+            android:paddingTop="80dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
