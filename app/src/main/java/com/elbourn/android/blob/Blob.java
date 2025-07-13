@@ -62,7 +62,7 @@ public class Blob {
     }
 
     public void update(float elapsed, PVector attraction) {
-        Log.i(TAG, "start updateBlob");
+//        Log.i(TAG, "start updateBlob");
         PVector elapsedSpeed = PVector.add(speed, attraction).mult(elapsed);
         if (elapsedSpeed.mag() > size) elapsedSpeed.normalize().mult(size);
         PVector proposedPosition = PVector.add(position, elapsedSpeed);
@@ -80,12 +80,12 @@ public class Blob {
         }
         position = PVector.add(position, elapsedSpeed);
         speed.dump("speed");
-        Log.i(TAG, "end updateBlob");
+//        Log.i(TAG, "end updateBlob");
     }
 
     public void display(Canvas canvas) {
-        Log.i(TAG, "start display");
+//        Log.i(TAG, "start display");
         canvas.drawCircle(position.x, position.y, size/2, paint);
-        Log.i(TAG, "end display");
+//        Log.i(TAG, "end display");
     }
 }

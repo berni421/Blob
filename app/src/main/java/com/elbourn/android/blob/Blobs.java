@@ -29,7 +29,7 @@ public class Blobs {
         this.surfaceView = surfaceView;
         blobs = new ArrayList<Blob>();
         long now = System.currentTimeMillis();
-        long stopTime = now + 2000;
+        long stopTime = now + 20000;
         for (int i = 0; i < numberOfBlobs; i++) {
             Blob blob = new Blob(smallSize);
             addBlob(blob);
@@ -120,7 +120,7 @@ public class Blobs {
             PVector direction = PVector.sub(blobi.position, blob.position);
             float distance = direction.mag();
             float fix = (float) Math.pow(10,Bar.getValue());
-            Log.i("Blobs", "fix: " + fix);
+//            Log.i("Blobs", "fix: " + fix);
             float force = fix * universalGravitationalConstant * (blobi.mass * blob.mass) / (distance * distance);
             a = PVector.add(a, direction.normalize().mult(force));
         }

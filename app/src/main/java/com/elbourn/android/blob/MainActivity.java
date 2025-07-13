@@ -1,10 +1,8 @@
 package com.elbourn.android.blob;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.window.OnBackInvokedDispatcher;
+import androidx.activity.OnBackPressedCallback;
 
 public class MainActivity extends OptionsMenu {
     String TAG = getClass().getSimpleName();
@@ -14,19 +12,23 @@ public class MainActivity extends OptionsMenu {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "start onCreate");
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
-                    OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-                    this::finishAffinity
-            );
-        }
+
+        // Handle back pressed
+        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // the 3 lines below replace the functionality of super.onBackPressed();
+                setEnabled(false);
+                getOnBackPressedDispatcher().onBackPressed();
+                setEnabled(true);
+                // any additional code
+                Log.i(TAG, "handleOnBackPressed");
+
+                finishAffinity();
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
 
         Log.i(TAG, "end onCreate");
     }
-
-//    @Override
-//    public void onBackPressed() {
-//        super.onBackPressed();
-//        finishAffinity();
-//    }
 }

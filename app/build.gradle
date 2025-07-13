@@ -10,8 +10,8 @@ android {
         minSdk = 23
         //noinspection EditedTargetSdkVersion
         targetSdk = 36
-        versionCode = 15
-        versionName = "v1.3.2 - updates for API 36"
+        versionCode = 17
+        versionName = "v1.3.3 - API 36 fixes"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
